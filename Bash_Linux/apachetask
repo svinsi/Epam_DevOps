@@ -1,0 +1,43 @@
+#!/bin/bash
+
+FILE="example_log.log"
+TEMP="/tmp/apache_filter"
+
+### From which ip were the most requests?
+echo "#######################################################"
+echo -n "Most requests ip is "
+awk '{ print $1 }' $FILE|sort -n|uniq -c|sort -nr |head -1|awk '{ print $2 }'
+
+### What is the most requested page?
+echo "#######################################################"
+echo -n "Most requested page is " 
+awk '{ print $7 }' $FILE|sort|uniq -c|sort -nr|head -1|awk '{ print $2 }'
+
+### How many requests were there from each ip?
+echo "#######################################################"
+echo "Requests from each ip. Fisrt 20 results. All results in a $TEMP"
+echo "#######################################################"
+awk '{ print $1 }' $FILE|sort -n|uniq -c|sort -nr > $TEMP
+cat $TEMP | head -20
+echo
+        
+### What non-existent pages were clients referred to??
+echo "#######################################################"
+echo  "Non-existent pages were most clients referred to"
+echo "#######################################################"
+awk '{print $7,$9}' $FILE|grep '404'|sort -nr| uniq -d
+echo
+
+### What time did site get the most requests?
+echo "#######################################################"
+echo "Time when site get the most requests. First 10 results"
+echo "#######################################################"
+awk '{ print $4, $7 }' $FILE| uniq -c|sort -nr| head 
+echo 
+
+### What search bots have accessed the site? (UA + IP)    
+echo "#######################################################"
+echo "Bots that had access to the site? (UA + IP)"
+echo "#######################################################"
+awk '{print $1,$9,$NF}' $FILE|grep 'bot'|grep '200'|uniq -c|sort -nr|head
+echo 
