@@ -1,0 +1,1 @@
+Hello! You can find screenshots of my AWS hometask in this folder. 
